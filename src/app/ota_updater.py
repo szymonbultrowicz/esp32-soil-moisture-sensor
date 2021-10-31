@@ -42,7 +42,7 @@
 # THE SOFTWARE.
 
 import os, gc
-from .httpclient import HttpClient
+from ota_httpclient import HttpClient
 
 class OTAUpdater:
     """
@@ -77,7 +77,7 @@ class OTAUpdater:
         """
 
         (current_version, latest_version) = self._check_for_new_version()
-        if latest_version > current_version:
+        if self.is_newer(latest_version, current_version):
             print('New version available, will download and install on next reboot')
             self._create_new_version_file(latest_version)
             return True
@@ -118,7 +118,7 @@ class OTAUpdater:
         """
 
         (current_version, latest_version) = self._check_for_new_version()
-        if latest_version > current_version:
+        if self.is_newer(latest_version, current_version):
             print('Updating to version {}...'.format(latest_version))
             self._create_new_version_file(latest_version)
             self._download_new_version(latest_version)
@@ -162,7 +162,7 @@ class OTAUpdater:
             with open(directory + '/' + version_file_name) as f:
                 version = f.read()
                 return version
-        return '0.0'
+        return '0.0.0'
 
     def get_latest_version(self):
         latest_release = self.http_client.get('https://api.github.com/repos/{}/releases/latest'.format(self.github_repo))
@@ -282,3 +282,19 @@ class OTAUpdater:
 
     def modulepath(self, path):
         return self.module + '/' + path if self.module else path
+
+    def is_newer(self, new_version, current_version):
+        return self.compare(new_version, current_version) > 0
+
+    def compare(self, version1, version2):
+        segments1 = version1.split('.')
+        segments2 = version2.split('.')
+        segments_len = max(len(segments1), len(segments2))
+        for i in range(segments_len):
+            v1 = int(segments1[i] or 0)
+            v2 = int(segments2[i] or 0)
+            if v1 > v2:
+                return 1
+            if v1 < v2:
+                return -1
+        return 0

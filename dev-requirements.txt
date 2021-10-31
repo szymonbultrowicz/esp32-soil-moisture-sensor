@@ -2,3 +2,4 @@ micropy-cli
 esptool
 adafruit-ampy
 semver
+requests
