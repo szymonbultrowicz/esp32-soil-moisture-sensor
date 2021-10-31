@@ -5,6 +5,7 @@ from time import sleep, sleep_ms
 import secrets
 import network
 from machine import ADC, Pin
+from ota.ota_updater import OTAUpdater
 from ubinascii import hexlify
 from umqtt.robust import MQTTClient
 
@@ -54,20 +55,31 @@ def send_reading(client, flower_id, moisture):
     print(f'Sending reading to MQTT topic {topic}: {msg}')
     client.publish(topic, msg)
 
-do_connect()
+def start():
+    do_connect()
 
-sensors = [Sensor('USWSWTT4UK', 36, 13)]
-mqtt_client = connect_mqtt()
+    sensors = [Sensor('USWSWTT4UK', 36, 13)]
+    mqtt_client = connect_mqtt()
 
-print(device_id)
+    print(device_id)
 
-while True:
-    for sensor in sensors:
-        moisture_reading = sensor.read()
-        moisture_percentage = round(convert(moisture_reading, MIN_READING, MAX_READING, 100, 0))
-        print(f'{sensor.id}: {moisture_reading} {str(moisture_percentage)}%')
-        if mqtt_client is not None:
-            send_reading(mqtt_client, sensor.id, max(moisture_percentage, 0))
-        else:
-            print("MQTT client empty - skipping")
-    sleep(5)
+    while True:
+        for sensor in sensors:
+            moisture_reading = sensor.read()
+            moisture_percentage = round(convert(moisture_reading, MIN_READING, MAX_READING, 100, 0))
+            print(f'{sensor.id}: {moisture_reading} {str(moisture_percentage)}%')
+            if mqtt_client is not None:
+                send_reading(mqtt_client, sensor.id, max(moisture_percentage, 0))
+            else:
+                print("MQTT client empty - skipping")
+        sleep(5)
+
+def download_and_install_update_if_available():
+    o = OTAUpdater('url-to-your-github-project')
+    o.install_update_if_available_after_boot(secrets.wifi_ssid, secrets.wifi_password)
+
+def boot():
+    download_and_install_update_if_available()
+    start()
+
+boot()

@@ -147,5 +147,3 @@ dmypy.json
 !src/lib
 
 secrets.py
-src/umqtt
-src/ota
