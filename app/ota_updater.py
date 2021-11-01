@@ -42,7 +42,7 @@
 # THE SOFTWARE.
 
 import os, gc
-from ota_httpclient import HttpClient
+from app.ota_httpclient import HttpClient
 
 class OTAUpdater:
     """
@@ -177,6 +177,7 @@ class OTAUpdater:
 
     def _download_all_files(self, version, sub_dir=''):
         url = 'https://api.github.com/repos/{}/contents{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
+        print(url)
         gc.collect() 
         file_list = self.http_client.get(url)
         for file in file_list.json():
@@ -287,10 +288,14 @@ class OTAUpdater:
         return self.compare(new_version, current_version) > 0
 
     def compare(self, version1, version2):
+        print(version1)
+        print(version2)
         segments1 = version1.split('.')
         segments2 = version2.split('.')
+        print(segments1, segments2)
         segments_len = max(len(segments1), len(segments2))
         for i in range(segments_len):
+            print(segments1[i], segments2[i])
             v1 = int(segments1[i] or 0)
             v2 = int(segments2[i] or 0)
             if v1 > v2:

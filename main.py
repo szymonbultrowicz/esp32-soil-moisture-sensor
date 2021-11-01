@@ -1,5 +1,5 @@
 import secrets
-from app.ota.ota_updater import OTAUpdater
+from app.ota_updater import OTAUpdater
 
 def download_and_install_update_if_available():
     o = OTAUpdater('https://github.com/szymonbultrowicz/esp32-soil-moisture-sensor', main_dir='app')
