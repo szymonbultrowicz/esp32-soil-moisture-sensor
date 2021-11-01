@@ -147,3 +147,4 @@ dmypy.json
 !src/lib
 
 secrets.py
+/next
