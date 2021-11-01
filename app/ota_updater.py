@@ -292,7 +292,6 @@ class OTAUpdater:
         segments2 = version2.split('.')
         segments_len = max(len(segments1), len(segments2))
         for i in range(segments_len):
-            print(segments1[i], segments2[i])
             v1 = int(segments1[i] or 0)
             v2 = int(segments2[i] or 0)
             if v1 > v2:
