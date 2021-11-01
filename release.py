@@ -16,7 +16,7 @@ latest_version = re.search('\d+\.\d+\.\d+$', tag_name).group(0)
 new_version = semver.bump_patch(latest_version)
 
 try:
-    cmd = ['gh', 'release', 'create', f'v{new_version}', 'src/app/*', '-n', '""']
+    cmd = ['gh', 'release', 'create', new_version, 'app/*', '-n', '""']
     print(' '.join(cmd))
     subprocess.run(cmd, check=True, capture_output=True)
 except subprocess.CalledProcessError as exc:
