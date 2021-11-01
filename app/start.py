@@ -3,8 +3,9 @@
 import json
 from time import sleep, sleep_ms
 import network
-from machine import ADC, Pin
+from machine import ADC, Pin, reset
 from app.mqtt_robust import MQTTClient
+from app.ota_updater import OTAUpdater
 from ubinascii import hexlify
 import secrets
 
@@ -12,6 +13,7 @@ MIN_READING = 1150
 MAX_READING = 3100
 
 device_id = f'esp32-{hexlify(network.WLAN().config("mac")).decode()}'
+updater = OTAUpdater(secrets.github_url, main_dir='app')
 
 class Sensor:
     def __init__(self, hass_id, sense_pin_no, power_pin_no):
@@ -27,15 +29,6 @@ class Sensor:
         self.power_pin.off()
         return reading
 
-def do_connect():
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    if not wlan.isconnected():
-        print('connecting to network...')
-        wlan.connect(secrets.wifi_ssid, secrets.wifi_password)
-        while not wlan.isconnected():
-            pass
-    print('network config:', wlan.ifconfig())
 
 def convert(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -53,9 +46,11 @@ def send_reading(client, flower_id, moisture):
     print(f'Sending reading to MQTT topic {topic}: {msg}')
     client.publish(topic, msg)
 
-def start():
-    do_connect()
+def update_if_available():
+    if updater.check_for_update_to_install_during_next_reboot():
+        reset()
 
+def start():
     sensors = [Sensor('USWSWTT4UK', 36, 13)]
     mqtt_client = connect_mqtt()
 
@@ -70,6 +65,6 @@ def start():
                 send_reading(mqtt_client, sensor.id, max(moisture_percentage, 0))
             else:
                 print("MQTT client empty - skipping")
-        sleep(5)
+        sleep(30)
 
 start()

@@ -1,11 +1,24 @@
+import network
 import secrets
 from app.ota_updater import OTAUpdater
 
+def connect():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    if not wlan.isconnected():
+        print('connecting to network...')
+        wlan.connect(secrets.wifi_ssid, secrets.wifi_password)
+        while not wlan.isconnected():
+            pass
+    print('network config:', wlan.ifconfig())
+
 def download_and_install_update_if_available():
-    o = OTAUpdater('https://github.com/szymonbultrowicz/esp32-soil-moisture-sensor', main_dir='app')
-    o.install_update_if_available_after_boot(secrets.wifi_ssid, secrets.wifi_password)
+    o = OTAUpdater(secrets.github_url, main_dir='app')
+    print(f'Current firmware version: {o.get_version(o.modulepath(o.main_dir))}')
+    o.install_update_if_available()
 
 def boot():
+    connect()
     download_and_install_update_if_available()
     import app.start
 

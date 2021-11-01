@@ -288,11 +288,8 @@ class OTAUpdater:
         return self.compare(new_version, current_version) > 0
 
     def compare(self, version1, version2):
-        print(version1)
-        print(version2)
         segments1 = version1.split('.')
         segments2 = version2.split('.')
-        print(segments1, segments2)
         segments_len = max(len(segments1), len(segments2))
         for i in range(segments_len):
             print(segments1[i], segments2[i])
