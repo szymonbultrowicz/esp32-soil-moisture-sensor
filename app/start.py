@@ -57,6 +57,7 @@ def start():
     print(device_id)
 
     while True:
+        update_if_available()
         for sensor in sensors:
             moisture_reading = sensor.read()
             moisture_percentage = round(convert(moisture_reading, MIN_READING, MAX_READING, 100, 0))
