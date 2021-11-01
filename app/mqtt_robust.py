@@ -21,10 +21,10 @@
 # THE SOFTWARE.
 
 import utime
-import mqtt_simple as simple
+from app.mqtt_simple import MQTTClient as SimpleMQTTClient
 
 
-class MQTTClient(simple.MQTTClient):
+class MQTTClient(SimpleMQTTClient):
 
     DELAY = 2
     DEBUG = False

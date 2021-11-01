@@ -4,9 +4,9 @@ import json
 from time import sleep, sleep_ms
 import network
 from machine import ADC, Pin
-from mqtt_robust import MQTTClient
+from app.mqtt_robust import MQTTClient
 from ubinascii import hexlify
-from .. import secrets
+import secrets
 
 MIN_READING = 1150
 MAX_READING = 3100
