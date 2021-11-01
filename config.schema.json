@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "sensors": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "sensor_pin": {
+                "type": "integer"
+              },
+              "power_pin": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "sensor_pin",
+              "power_pin"
+            ]
+          }
+        ]
+      }
+    },
+    "required": [
+      "sensors"
+    ]
+  }

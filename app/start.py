@@ -50,8 +50,13 @@ def update_if_available():
     if updater.check_for_update_to_install_during_next_reboot():
         reset()
 
+def read_sensors_config():
+    with open('/config.json', 'r') as f:
+        config = json.loads(f.read())
+        return [Sensor(s['id'], s['sensor_pin'], s['power_pin']) for s in config['sensors']]
+
 def start():
-    sensors = [Sensor('USWSWTT4UK', 36, 13)]
+    sensors = read_sensors_config()
     mqtt_client = connect_mqtt()
 
     print(device_id)

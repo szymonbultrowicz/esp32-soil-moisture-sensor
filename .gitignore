@@ -148,3 +148,4 @@ dmypy.json
 
 secrets.py
 /next
+config.json
