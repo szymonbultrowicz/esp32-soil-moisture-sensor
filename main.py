@@ -13,7 +13,7 @@ def connect():
     print('network config:', wlan.ifconfig())
 
 def download_and_install_update_if_available():
-    o = OTAUpdater(secrets.github_url, main_dir='app')
+    o = OTAUpdater(secrets.github_url, main_dir='app', headers={'Authorization', f'token {secrets.github_token}'})
     if o.install_update_if_available():
         print('Rebooting...')
         machine.reset()
