@@ -6,6 +6,7 @@ import network
 from machine import ADC, Pin, reset
 from app.mqtt_robust import MQTTClient
 from app.ota_updater import OTAUpdater
+from app.updater import updater
 from ubinascii import hexlify
 import secrets
 
@@ -13,7 +14,6 @@ MIN_READING = 1150
 MAX_READING = 3100
 
 device_id = f'esp32-{hexlify(network.WLAN().config("mac")).decode()}'
-updater = OTAUpdater(secrets.github_url, main_dir='app', headers={'Authorization', f'token {secrets.github_token}'})
 
 class Sensor:
     def __init__(self, hass_id, sense_pin_no, power_pin_no):
