@@ -55,7 +55,13 @@ def read_sensors_config():
         config = json.loads(f.read())
         return [Sensor(s['id'], s['sensor_pin'], s['power_pin']) for s in config['sensors']]
 
+def read_interval_config():
+    with open('/config.json', 'r') as f:
+        config = json.loads(f.read())
+        return config['interval']
+
 def start():
+    interval = read_interval_config()
     sensors = read_sensors_config()
     mqtt_client = connect_mqtt()
 
@@ -71,6 +77,8 @@ def start():
                 send_reading(mqtt_client, sensor.id, max(moisture_percentage, 0))
             else:
                 print("MQTT client empty - skipping")
-        sleep(30)
+        
+        print(f'Sleeping for {interval} seconds')
+        sleep(interval)
 
 start()
