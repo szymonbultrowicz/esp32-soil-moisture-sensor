@@ -61,24 +61,28 @@ def read_interval_config():
         return config['interval']
 
 def start():
-    interval = read_interval_config()
-    sensors = read_sensors_config()
-    mqtt_client = connect_mqtt()
+    try:
+        interval = read_interval_config()
+        sensors = read_sensors_config()
+        mqtt_client = connect_mqtt()
 
-    print(device_id)
+        print(device_id)
 
-    while True:
-        update_if_available()
-        for sensor in sensors:
-            moisture_reading = sensor.read()
-            moisture_percentage = round(convert(moisture_reading, MIN_READING, MAX_READING, 100, 0))
-            print(f'{sensor.id}: {moisture_reading} {str(moisture_percentage)}%')
-            if mqtt_client is not None:
-                send_reading(mqtt_client, sensor.id, max(moisture_percentage, 0))
-            else:
-                print("MQTT client empty - skipping")
-        
-        print(f'Sleeping for {interval} seconds')
-        sleep(interval)
+        while True:
+            update_if_available()
+            for sensor in sensors:
+                moisture_reading = sensor.read()
+                moisture_percentage = round(convert(moisture_reading, MIN_READING, MAX_READING, 100, 0))
+                print(f'{sensor.id}: {moisture_reading} {str(moisture_percentage)}%')
+                if mqtt_client is not None:
+                    send_reading(mqtt_client, sensor.id, max(moisture_percentage, 0))
+                else:
+                    print("MQTT client empty - skipping")
+
+            print(f'Sleeping for {interval} seconds')
+            sleep(interval)
+    except OSError as e:
+        print('[FATAl] Uncaugth error in the main loop: ' + str(e))
+        reset()
 
 start()

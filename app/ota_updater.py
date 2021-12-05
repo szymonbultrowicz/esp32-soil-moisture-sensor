@@ -41,7 +41,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os, gc
+import time
+import gc
+import os
+import machine
 from app.ota_httpclient import HttpClient
 
 class OTAUpdater:
@@ -116,18 +119,21 @@ class OTAUpdater:
         -------
             bool: true if a new version is available, false otherwise
         """
-
-        (current_version, latest_version) = self._check_for_new_version()
-        if self.is_newer(latest_version, current_version):
-            print('Updating to version {}...'.format(latest_version))
-            self._create_new_version_file(latest_version)
-            self._download_new_version(latest_version)
-            self._copy_secrets_file()
-            self._delete_old_version()
-            self._install_new_version()
-            return True
-        
-        return False
+        try:
+            (current_version, latest_version) = self._check_for_new_version()
+            if self.is_newer(latest_version, current_version):
+                print('Updating to version {}...'.format(latest_version))
+                self._create_new_version_file(latest_version)
+                self._download_new_version(latest_version)
+                self._copy_secrets_file()
+                self._delete_old_version()
+                self._install_new_version()
+                return True
+            
+            return False
+        except OSError as e:
+            print('[FATAl] Error while installing a new version: ' + str(e))
+            return False
 
 
     @staticmethod
